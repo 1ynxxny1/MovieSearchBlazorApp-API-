@@ -1,0 +1,50 @@
+﻿@page "/search"
+@using MovieSearchBlazorApp.Models
+@using MovieSearchBlazorApp.Services
+@inject MovieService MovieService
+@inject NavigationManager NavigationManager
+
+<h3>Movie Search</h3>
+
+<input @bind="searchQuery" placeholder="Enter movie title" />
+<button @onclick="SearchMovies">Search</button>
+
+@if (movies != null)
+{
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Type</th>
+                <th>Poster</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var movie in movies)
+            {
+                <tr @onclick="() => ShowMovieDetails(movie.Id)">
+                    <td>@movie.Title</td>
+                    <td>@movie.Year</td>
+                    <td>@movie.Type</td>
+                    <td><img src="@movie.Poster" alt="@movie.Title" style="width:100px" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string searchQuery;
+    private MovieSearchResult[] movies;
+
+    private async Task SearchMovies()
+    {
+        movies = await MovieService.SearchMoviesAsync(searchQuery);
+    }
+
+    private void ShowMovieDetails(int id)
+    {
+        NavigationManager.NavigateTo($"/movie/{id}");
+    }
+}
